@@ -1,40 +1,39 @@
-// src/components/Navigation.js
 import React from 'react';
-import { Link, useLocation } from 'react-router-dom';
+import { Link, useNavigate } from 'react-router-dom';
+import { useAuth } from '../context/AuthContext';
+import './Navigation.css';
 
 const Navigation = () => {
-  const location = useLocation();
+  const { user, logout } = useAuth();
+  const navigate = useNavigate();
+
+  const handleLogout = () => {
+    logout();
+    navigate('/login');
+  };
 
   return (
-    <nav className="navbar">
-      <div className="nav-container">
-        <h1 className="nav-logo">Scrap Management</h1>
-        <ul className="nav-menu">
-          <li className="nav-item">
-            <Link 
-              to="/" 
-              className={`nav-link ${location.pathname === '/' ? 'active' : ''}`}
-            >
-              Daily Record
-            </Link>
-          </li>
-          <li className="nav-item">
-            <Link 
-              to="/history" 
-              className={`nav-link ${location.pathname === '/history' ? 'active' : ''}`}
-            >
-              History
-            </Link>
-          </li>
-          <li className="nav-item">
-            <Link 
-              to="/dashboard" 
-              className={`nav-link ${location.pathname === '/dashboard' ? 'active' : ''}`}
-            >
-              Dashboard
-            </Link>
-          </li>
-        </ul>
+    <nav className="navigation">
+      <div className="nav-brand">
+        <Link to="/">Scrap Tracker</Link>
+      </div>
+      
+      <div className="nav-links">
+        {user ? (
+          <>
+            <Link to="/">Daily Record</Link>
+            <Link to="/history">History</Link>
+            <Link to="/dashboard">Dashboard</Link>
+            <div className="user-info">
+              <span>Welcome, {user.username}</span>
+              <button onClick={handleLogout} className="logout-btn">
+                Logout
+              </button>
+            </div>
+          </>
+        ) : (
+          <Link to="/login">Login</Link>
+        )}
       </div>
     </nav>
   );
