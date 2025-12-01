@@ -1,4 +1,6 @@
+// src/context/AuthContext.js
 import React, { createContext, useState, useContext, useEffect } from 'react';
+import authService from '../services/auth';
 
 const AuthContext = createContext();
 
@@ -16,25 +18,35 @@ export const AuthProvider = ({ children }) => {
 
   useEffect(() => {
     // Check if user is logged in on app start
-    const token = localStorage.getItem('authToken');
-    const userData = localStorage.getItem('userData');
-    
-    if (token && userData) {
-      setUser(JSON.parse(userData));
+    const token = authService.getToken();
+    if (token) {
+      // Verify token and get user info
+      authService.getCurrentUser(token)
+        .then(response => {
+          if (response.success) {
+            setUser(response.data.user);
+          }
+        })
+        .catch(() => {
+          // Token is invalid, remove it
+          authService.removeToken();
+        })
+        .finally(() => {
+          setLoading(false);
+        });
+    } else {
+      setLoading(false);
     }
-    setLoading(false);
   }, []);
 
   const login = (userData, token) => {
     setUser(userData);
-    localStorage.setItem('authToken', token);
-    localStorage.setItem('userData', JSON.stringify(userData));
+    authService.setToken(token);
   };
 
   const logout = () => {
     setUser(null);
-    localStorage.removeItem('authToken');
-    localStorage.removeItem('userData');
+    authService.removeToken();
   };
 
   const value = {
