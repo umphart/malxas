@@ -1,5 +1,5 @@
 // src/services/auth.js
-const API_BASE_URL = 'http://https://xas-metal.onrender.com/api';
+const API_BASE_URL = 'https://xas-metal.onrender.com/api';
 
 class AuthService {
   constructor() {
